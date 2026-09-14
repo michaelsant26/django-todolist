@@ -1,0 +1,48 @@
+{% extends 'todo/base.html' %}
+
+{% block title %}To-Do List Saya{% endblock %}
+
+{% block content %}
+<p>
+  Halo, {{ user.username }}!
+<form method="POST" action="{% url 'logout' %}" style="display: inline;">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-sm btn-outline-secondary">Logout</button>
+</form>
+</p>
+<h1>To-Do List Saya</h1>
+
+<form method="POST" action="{% url 'add_task' %}" class="d-flex gap-2 mb-3">
+  {% csrf_token %}
+  <input type="text" name="task_name" class="form-control" autocomplete="off" placeholder="Nama Task Baru" required>
+  <button type="submit" class="btn btn-primary">Tambah</button>
+</form>
+
+<div class="btn-group mb-3" role="group">
+  <a href="{% url 'task_list' %}"
+    class="btn btn-outline-secondary {% if filter_status == 'all' %}active{% endif %}">Semua</a>
+  <a href="{% url 'task_list' %}?filter=pending"
+    class="btn btn-outline-secondary {% if filter_status == 'pending' %}active{% endif %}">Belum Selesai</a>
+  <a href="{% url 'task_list' %}?filter=done"
+    class="btn btn-outline-secondary {% if filter_status == 'done' %}active{% endif %}">Selesai</a>
+</div>
+
+<ul class="list-group">
+  {% for task in task %}
+  <li class="list-group-item d-flex justify-content-between align-items-center">
+    <span>
+      {% if task.status %}
+      <s>{{ task.task_name }}</s> ✅
+      {% else %}
+      {{ task.task_name }}
+      {% endif %}
+    </span>
+    <span>
+      <a href="{% url 'toggle_status' task.id %}" class="btn btn-sm btn-outline-success">Toggle</a>
+      <a href="{% url 'edit_task' task.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+      <a href="{% url 'delete_task' task.id %}" class="btn btn-sm btn-outline-danger">Hapus</a>
+    </span>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}
